@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\Kehadirans\Tables;
 
+use App\Support\ExportColumns;
+
 use Filament\Actions\DeleteBulkAction;
 use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -158,6 +160,7 @@ class KehadiransTable
             ExportBulkAction::make()->exports([
                 ExcelExport::make('table')
                     ->fromTable()
+                    ->withColumns(ExportColumns::kehadiran())
                     ->withFilename('kehadiran-siswa-rekapan-' . date('Y-m-d'))
                     ->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
             ])->label('Export Selected'),

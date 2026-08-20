@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Guru extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'gurus';
 
@@ -26,26 +27,33 @@ class Guru extends Model
 
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'status' => 'string', // Adding cast for status field
+        'status' => 'string',
     ];
 
     protected $attributes = [
-        'status' => 'aktif', // Default status
+        'status' => 'aktif',
     ];
 
-    // Relasi: User account
+    protected function lowercaseAttributes(): array
+    {
+        return ['status'];
+    }
+
+    protected function trimmedAttributes(): array
+    {
+        return ['nip', 'nama', 'email', 'no_telp', 'alamat'];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relasi: Guru sebagai Wali Kelas
     public function kelasWali()
     {
         return $this->hasMany(Kelas::class, 'wali_kelas_id');
     }
 
-    // Relasi: Jadwal mengajar
     public function jadwals()
     {
         return $this->hasMany(Jadwal::class);

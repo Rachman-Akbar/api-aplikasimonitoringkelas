@@ -254,7 +254,6 @@ class GuruResource extends Resource
                         ExcelExport::make('gurus')
                             ->fromTable()
                             ->withColumns([
-                                Column::make('id'),
                                 Column::make('nip'),
                                 Column::make('nama'),
                                 Column::make('email'),

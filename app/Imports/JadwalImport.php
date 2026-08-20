@@ -2,60 +2,102 @@
 
 namespace App\Imports;
 
+use App\Models\Guru;
 use App\Models\Jadwal;
 use App\Models\Kelas;
 use App\Models\MataPelajaran;
-use App\Models\Guru;
-use Illuminate\Support\Str;
+use App\Support\RelationResolver;
+use App\Support\TextNormalizer;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
 class JadwalImport implements ToModel, WithHeadingRow, WithValidation, WithBatchInserts, WithChunkReading
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
     public function model(array $row)
     {
-        // Normalize headers
-        $normalized = [];
-        foreach ($row as $key => $value) {
-            $k = Str::of($key)->trim()->lower()->replace(' ', '_')->__toString();
-            $normalized[$k] = is_string($value) ? trim($value) : $value;
-        }
-        $row = $normalized;
+        $kelasId = $this->resolveId(Kelas::class, 'nama', $row['kelas'] ?? $row['kelas_id'] ?? null, 'Kelas');
+        $mataPelajaranId = $this->resolveId(MataPelajaran::class, 'nama', $row['mata_pelajaran'] ?? $row['mata_pelajaran_id'] ?? null, 'Mata pelajaran');
+        $guruId = $this->resolveId(Guru::class, 'nama', $row['guru'] ?? $row['guru_id'] ?? null, 'Guru');
+        $hari = $this->normalizeHari($row['hari'] ?? null);
+        $jamKe = (int) ($row['jam_ke'] ?? 0);
 
-        // Resolve kelas/mata_pelajaran/guru by name if id not provided
-        if (empty($row['kelas_id']) && !empty($row['kelas'])) {
-            $kelas = Kelas::where('nama', $row['kelas'])->first();
-            if ($kelas) $row['kelas_id'] = $kelas->id;
-        }
-        if (empty($row['mata_pelajaran_id']) && !empty($row['mata_pelajaran'])) {
-            $mp = MataPelajaran::where('nama', $row['mata_pelajaran'])->first();
-            if ($mp) $row['mata_pelajaran_id'] = $mp->id;
-        }
-        if (empty($row['guru_id']) && !empty($row['guru'])) {
-            $g = Guru::where('nama', $row['guru'])->first();
-            if ($g) $row['guru_id'] = $g->id;
-        }
-        return new Jadwal([
-            'kelas_id' => $row['kelas_id'] ?? null,
-            'mata_pelajaran_id' => $row['mata_pelajaran_id'] ?? null,
-            'guru_id' => $row['guru_id'] ?? null,
-            'hari' => $row['hari'] ?? null,
-            'jam_ke' => $row['jam_ke'] ?? null,
-            'jam_mulai' => $row['jam_mulai'] ?? null,
-            'jam_selesai' => $row['jam_selesai'] ?? null,
-            'ruangan' => $row['ruangan'] ?? null,
-            'status' => $row['status'] ?? 'aktif',
-            'keterangan' => $row['keterangan'] ?? null,
+        $record = Jadwal::firstOrNew([
+            'kelas_id' => $kelasId,
+            'mata_pelajaran_id' => $mataPelajaranId,
+            'guru_id' => $guruId,
+            'hari' => $hari,
+            'jam_ke' => $jamKe,
         ]);
+
+        $record->fill([
+            'jam_mulai' => $this->normalizeTime($row['jam_mulai'] ?? null),
+            'jam_selesai' => $this->normalizeTime($row['jam_selesai'] ?? null),
+            'tahun_ajaran' => TextNormalizer::trim($row['tahun_ajaran'] ?? null),
+            'ruangan' => TextNormalizer::lower($row['ruangan'] ?? null),
+            'status' => TextNormalizer::lower($row['status'] ?? 'aktif'),
+            'keterangan' => TextNormalizer::trim($row['keterangan'] ?? null),
+        ]);
+
+        return $record;
+    }
+
+    private function resolveId(string $modelClass, string $column, mixed $value, string $label): int
+    {
+        if (is_numeric($value) && $modelClass::query()->whereKey((int) $value)->exists()) {
+            return (int) $value;
+        }
+
+        return RelationResolver::idByText($modelClass, $column, $value, $label);
+    }
+
+    private function normalizeHari(mixed $value): ?string
+    {
+        return match (TextNormalizer::lower($value)) {
+            'senin' => 'Senin',
+            'selasa' => 'Selasa',
+            'rabu' => 'Rabu',
+            'kamis' => 'Kamis',
+            'jumat', "jum'at" => 'Jumat',
+            'sabtu' => 'Sabtu',
+            'minggu' => 'Minggu',
+            default => TextNormalizer::trim($value),
+        };
+    }
+
+    private function normalizeTime(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $time = trim((string) $value);
+
+        foreach (['H:i:s', 'H:i', 'h:i:s A', 'h:i A'] as $format) {
+            $date = \DateTime::createFromFormat($format, $time);
+
+            if ($date !== false) {
+                return $date->format('H:i:s');
+            }
+        }
+
+        return $time;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'kelas' => 'required_without:kelas_id',
+            'mata_pelajaran' => 'required_without:mata_pelajaran_id',
+            'guru' => 'required_without:guru_id',
+            'hari' => 'required|string',
+            'jam_ke' => 'required|integer|min:1|max:15',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required',
+            'status' => 'nullable|string',
+        ];
     }
 
     public function batchSize(): int
@@ -66,17 +108,5 @@ class JadwalImport implements ToModel, WithHeadingRow, WithValidation, WithBatch
     public function chunkSize(): int
     {
         return 1000;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'kelas_id' => 'nullable|exists:kelas,id',
-            'mata_pelajaran_id' => 'nullable|exists:mata_pelajarans,id',
-            'guru_id' => 'nullable|exists:gurus,id',
-            'hari' => 'nullable|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
-            'jam_ke' => 'nullable|integer|min:1',
-            'status' => 'nullable|in:aktif,nonaktif',
-        ];
     }
 }

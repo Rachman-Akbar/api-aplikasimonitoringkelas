@@ -3,7 +3,8 @@
 namespace App\Filament\Admin\Resources\KelasResource\Pages;
 
 use App\Filament\Admin\Resources\KelasResource;
-use App\Filament\Imports\KelasImporter;
+use App\Filament\Actions\ImportAction;
+use App\Imports\KelasImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
@@ -22,11 +23,9 @@ class ListKelas extends ListRecords
                 ->color('secondary')
                 ->url(route('download.template.kelas'))
                 ->openUrlInNewTab(false),
-            Actions\ImportAction::make()
-                ->importer(KelasImporter::class)
+            ImportAction::make(KelasImport::class)
                 ->modalHeading('Impor Kelas')
-                ->modalDescription('Unggah file CSV atau XLSX dengan format yang sesuai. Pastikan Anda menggunakan template yang telah disediakan. Template bisa diunduh menggunakan tombol "Download Template".')
-                ->maxRows(10000),
+                ->modalDescription('Unggah file XLSX, XLS, atau CSV. Untuk template XLSX dua sheet, hanya Sheet Data yang akan diimport.'),
         ];
     }
 

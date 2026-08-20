@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class IzinGuru extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'izin_gurus';
 
@@ -31,19 +32,26 @@ class IzinGuru extends Model
         'durasi_hari' => 'integer',
     ];
 
-    // Relasi: Guru yang mengajukan izin
+    protected function lowercaseAttributes(): array
+    {
+        return ['jenis_izin', 'status_approval'];
+    }
+
+    protected function trimmedAttributes(): array
+    {
+        return ['keterangan', 'file_surat', 'catatan_approval'];
+    }
+
     public function guru()
     {
         return $this->belongsTo(Guru::class, 'guru_id');
     }
 
-    // Relasi: User yang menyetujui
     public function disetujuiOleh()
     {
         return $this->belongsTo(User::class, 'disetujui_oleh');
     }
 
-    // Accessor untuk label jenis izin
     public function getJenisIzinLabelAttribute()
     {
         return match ($this->jenis_izin) {
@@ -56,7 +64,6 @@ class IzinGuru extends Model
         };
     }
 
-    // Accessor untuk label status approval
     public function getStatusApprovalLabelAttribute()
     {
         return match ($this->status_approval) {

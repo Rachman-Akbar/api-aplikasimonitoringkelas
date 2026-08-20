@@ -6,6 +6,7 @@ use App\Filament\Imports\MataPelajaranImporter;
 use App\Filament\Admin\Resources\MataPelajaranResource\Pages;
 use App\Filament\Admin\Resources\MataPelajaranResource\RelationManagers;
 use App\Models\MataPelajaran;
+use App\Support\TextNormalizer;
 use BackedEnum;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -43,14 +44,20 @@ class MataPelajaranResource extends Resource
                         ignoreRecord: true
                     )
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (string $operation, $state, $set, $get) {
-                        if ($operation === 'create') {
-                            $existing = \App\Models\MataPelajaran::where('kode', $state)->first();
+                    ->afterStateUpdated(function (string $operation, $state, $set) {
+                        $normalized = TextNormalizer::lower($state);
+                        $set('kode', $normalized);
+
+                        if ($operation === 'create' && $normalized) {
+                            $existing = \App\Models\MataPelajaran::query()
+                                ->whereRaw('LOWER(TRIM(kode)) = ?', [$normalized])
+                                ->exists();
+
                             if ($existing) {
                                 $set('kode', '');
                                 \Filament\Notifications\Notification::make()
                                     ->title('Kode mata pelajaran sudah ada')
-                                    ->body('Silakan gunakan kode lain.')
+                                    ->body('Perbedaan huruf besar dan kecil tetap dianggap data yang sama.')
                                     ->warning()
                                     ->send();
                             }
@@ -65,13 +72,20 @@ class MataPelajaranResource extends Resource
                         ignoreRecord: true
                     )
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (string $operation, $state, $set, $get) {
-                        if ($operation === 'create') {
-                            $existing = \App\Models\MataPelajaran::where('nama', $state)->first();
+                    ->afterStateUpdated(function (string $operation, $state, $set) {
+                        $normalized = TextNormalizer::lower($state);
+                        $set('nama', $normalized);
+
+                        if ($operation === 'create' && $normalized) {
+                            $existing = \App\Models\MataPelajaran::query()
+                                ->whereRaw('LOWER(TRIM(nama)) = ?', [$normalized])
+                                ->exists();
+
                             if ($existing) {
+                                $set('nama', '');
                                 \Filament\Notifications\Notification::make()
                                     ->title('Nama mata pelajaran sudah ada')
-                                    ->body('Silakan gunakan nama lain.')
+                                    ->body('Perbedaan huruf besar dan kecil tetap dianggap data yang sama.')
                                     ->warning()
                                     ->send();
                             }
@@ -91,6 +105,7 @@ class MataPelajaranResource extends Resource
                     ->datalist(function () {
                         // Get all unique categories from database
                         $categories = \App\Models\MataPelajaran::query()
+                            ->withoutGlobalScope('order')
                             ->select('kategori')
                             ->distinct()
                             ->whereNotNull('kategori')
@@ -101,12 +116,12 @@ class MataPelajaranResource extends Resource
 
                         // Add common categories
                         $commonCategories = [
-                            'Normatif',
-                            'Adaptif',
-                            'Produktif',
-                            'Keahlian',
-                            'Kejuruan',
-                            'Muatan Lokal',
+                            'normatif',
+                            'adaptif',
+                            'produktif',
+                            'keahlian',
+                            'kejuruan',
+                            'muatan lokal',
                         ];
 
                         // Merge and remove duplicates
@@ -120,6 +135,7 @@ class MataPelajaranResource extends Resource
                     ->options(function () {
                         // Get all unique status from database
                         return \App\Models\MataPelajaran::query()
+                            ->withoutGlobalScope('order')
                             ->select('status')
                             ->distinct()
                             ->whereNotNull('status')
@@ -165,10 +181,10 @@ class MataPelajaranResource extends Resource
                 Tables\Columns\TextColumn::make('kategori')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
-                        'Keahlian' => 'info',
-                        'Kejuruan' => 'secondary',
-                        'Normatif' => 'success',
-                        'Adaptif' => 'purple',
+                        'keahlian' => 'info',
+                        'kejuruan' => 'secondary',
+                        'normatif' => 'success',
+                        'adaptif' => 'purple',
                         'wajib' => 'primary',
                         'pilihan' => 'warning',
                         'muatan-lokal' => 'success',
@@ -193,6 +209,7 @@ class MataPelajaranResource extends Resource
                         // but still reflect new categories quickly
                         return cache()->remember('mata_pelajaran_kategori_options', 30, function () {
                             return \App\Models\MataPelajaran::query()
+                                ->withoutGlobalScope('order')
                                 ->select('kategori')
                                 ->distinct()
                                 ->whereNotNull('kategori')
@@ -210,6 +227,7 @@ class MataPelajaranResource extends Resource
                     ->options(function () {
                         // Get all unique status from database
                         return \App\Models\MataPelajaran::query()
+                            ->withoutGlobalScope('order')
                             ->select('status')
                             ->distinct()
                             ->whereNotNull('status')
@@ -239,7 +257,6 @@ class MataPelajaranResource extends Resource
                     ExcelExport::make('table')
                         ->fromTable()
                         ->withColumns([
-                            Column::make('id'),
                             Column::make('kode'),
                             Column::make('nama'),
                             Column::make('deskripsi'),

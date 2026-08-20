@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\KelasResource\Pages;
 use App\Filament\Imports\KelasImporter;
 use App\Models\Kelas;
+use App\Support\TextNormalizer;
 use BackedEnum;
 use Filament\Actions;
 use Filament\Forms;
@@ -45,14 +46,20 @@ class KelasResource extends Resource
                                 ignoreRecord: true
                             )
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, $state, $set, $get) {
-                                if ($operation === 'create') {
-                                    $existing = \App\Models\Kelas::where('nama', $state)->first();
+                            ->afterStateUpdated(function (string $operation, $state, $set) {
+                                $normalized = TextNormalizer::lower($state);
+                                $set('nama', $normalized);
+
+                                if ($operation === 'create' && $normalized) {
+                                    $existing = \App\Models\Kelas::query()
+                                        ->whereRaw('LOWER(TRIM(nama)) = ?', [$normalized])
+                                        ->exists();
+
                                     if ($existing) {
                                         $set('nama', '');
                                         \Filament\Notifications\Notification::make()
                                             ->title('Nama kelas sudah terdaftar')
-                                            ->body('Silakan gunakan nama lain.')
+                                            ->body('Perbedaan huruf besar dan kecil tetap dianggap data yang sama.')
                                             ->warning()
                                             ->send();
                                     }
@@ -237,11 +244,9 @@ class KelasResource extends Resource
                         ExcelExport::make('kelas')
                             ->fromTable()
                             ->withColumns([
-                                Column::make('id'),
-                                Column::make('nama'),
-                                Column::make('tingkat'),
-                                Column::make('jurusan'),
-                                Column::make('wali_kelas_id')->heading('Wali Kelas ID'),
+                                Column::make('nama')->heading('Nama Kelas'),
+                                Column::make('tingkat')->heading('Tingkat'),
+                                Column::make('jurusan')->heading('Jurusan'),
                                 Column::make('waliKelas.nama')->heading('Wali Kelas'),
                                 Column::make('kapasitas'),
                                 Column::make('jumlah_siswa'),

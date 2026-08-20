@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kelas extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'kelas';
 
@@ -27,26 +28,33 @@ class Kelas extends Model
         'tingkat' => 'integer',
         'kapasitas' => 'integer',
         'jumlah_siswa' => 'integer',
-        'status' => 'string', // Adding cast for status field
+        'status' => 'string',
     ];
 
     protected $attributes = [
-        'status' => 'aktif', // Default status
+        'status' => 'aktif',
     ];
 
-    // Relasi: Wali Kelas
+    protected function lowercaseAttributes(): array
+    {
+        return ['nama', 'jurusan', 'ruangan', 'status'];
+    }
+
+    protected function caseInsensitiveUniqueAttributes(): array
+    {
+        return ['nama'];
+    }
+
     public function waliKelas()
     {
         return $this->belongsTo(Guru::class, 'wali_kelas_id');
     }
 
-    // Relasi: Siswa dalam kelas
     public function siswas()
     {
         return $this->hasMany(Siswa::class);
     }
 
-    // Relasi: Jadwal kelas
     public function jadwals()
     {
         return $this->hasMany(Jadwal::class);

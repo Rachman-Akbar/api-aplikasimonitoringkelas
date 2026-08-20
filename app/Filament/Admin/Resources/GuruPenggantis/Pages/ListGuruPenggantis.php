@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\GuruPenggantis\Pages;
 
+use App\Support\ExportColumns;
+
 use App\Filament\Admin\Resources\GuruPenggantis\GuruPenggantiResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
@@ -19,6 +21,7 @@ class ListGuruPenggantis extends ListRecords
                 ->exports([
                     ExcelExport::make('export')
                         ->fromTable()
+                        ->withColumns(ExportColumns::guruPengganti())
                         ->withFilename('guru-pengganti-rekapan-' . date('Y-m-d'))
                         ->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
                 ])

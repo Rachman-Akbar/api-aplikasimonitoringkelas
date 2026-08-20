@@ -231,10 +231,11 @@ class UserResource extends Resource
                         ExcelExport::make('users')
                             ->fromTable()
                             ->withColumns([
-                                Column::make('id'),
-                                Column::make('name'),
-                                Column::make('email'),
-                                Column::make('role'),
+                                Column::make('name')->heading('Nama'),
+                                Column::make('email')->heading('Email'),
+                                Column::make('role')->heading('Role'),
+                                Column::make('guru.nama')->heading('Guru'),
+                                Column::make('kelas.nama')->heading('Kelas'),
                                 Column::make('created_at'),
                                 Column::make('updated_at'),
                             ]),

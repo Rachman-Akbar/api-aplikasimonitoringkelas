@@ -3,7 +3,8 @@
 namespace App\Filament\Admin\Resources\SiswaResource\Pages;
 
 use App\Filament\Admin\Resources\SiswaResource;
-use App\Filament\Imports\SiswaImporter;
+use App\Filament\Actions\ImportAction;
+use App\Imports\SiswaImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
@@ -22,11 +23,9 @@ class ListSiswas extends ListRecords
                 ->color('secondary')
                 ->url(route('download.template.siswa'))
                 ->openUrlInNewTab(false),
-            Actions\ImportAction::make()
-                ->importer(SiswaImporter::class)
+            ImportAction::make(SiswaImport::class)
                 ->modalHeading('Impor Siswa')
-                ->modalDescription('Unggah file CSV atau XLSX dengan format yang sesuai. Pastikan Anda menggunakan template yang telah disediakan. Template bisa diunduh menggunakan tombol "Download Template".')
-                ->maxRows(10000),
+                ->modalDescription('Unggah file XLSX, XLS, atau CSV. Untuk template XLSX dua sheet, hanya Sheet Data yang akan diimport.'),
         ];
     }
 

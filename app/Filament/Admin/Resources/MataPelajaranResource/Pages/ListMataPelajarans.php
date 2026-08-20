@@ -3,7 +3,8 @@
 namespace App\Filament\Admin\Resources\MataPelajaranResource\Pages;
 
 use App\Filament\Admin\Resources\MataPelajaranResource;
-use App\Filament\Imports\MataPelajaranImporter;
+use App\Filament\Actions\ImportAction;
+use App\Imports\MataPelajaranImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
@@ -22,11 +23,9 @@ class ListMataPelajarans extends ListRecords
                 ->color('secondary')
                 ->url(route('download.template.mata-pelajaran'))
                 ->openUrlInNewTab(false),
-            Actions\ImportAction::make()
-                ->importer(MataPelajaranImporter::class)
+            ImportAction::make(MataPelajaranImport::class)
                 ->modalHeading('Impor Mata Pelajaran')
-                ->modalDescription('Unggah file CSV atau XLSX dengan format yang sesuai. Pastikan Anda menggunakan template yang telah disediakan. Template bisa diunduh menggunakan tombol "Download Template".')
-                ->maxRows(10000),
+                ->modalDescription('Unggah file XLSX, XLS, atau CSV. Untuk template XLSX dua sheet, hanya Sheet Data yang akan diimport.'),
         ];
     }
 

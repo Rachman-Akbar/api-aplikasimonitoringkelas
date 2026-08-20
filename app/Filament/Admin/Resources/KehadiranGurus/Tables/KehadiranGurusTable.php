@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\KehadiranGurus\Tables;
 
+use App\Support\ExportColumns;
+
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -166,6 +168,7 @@ class KehadiranGurusTable
             ExportBulkAction::make()->exports([
                 ExcelExport::make('table')
                     ->fromTable()
+                    ->withColumns(ExportColumns::kehadiranGuru())
                     ->withFilename('teacher-attendance-data-' . date('Y-m-d'))
                     ->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
             ])->label('Export Selected'),

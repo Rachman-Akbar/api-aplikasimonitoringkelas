@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kehadiran extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'kehadirans';
 
@@ -25,13 +26,21 @@ class Kehadiran extends Model
         'tanggal' => 'date',
     ];
 
-    // Relasi: Siswa
+    protected function lowercaseAttributes(): array
+    {
+        return ['status'];
+    }
+
+    protected function trimmedAttributes(): array
+    {
+        return ['keterangan'];
+    }
+
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);
     }
 
-    // Relasi: Jadwal
     public function jadwal()
     {
         return $this->belongsTo(Jadwal::class);

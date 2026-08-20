@@ -3,7 +3,8 @@
 namespace App\Filament\Admin\Resources\JadwalResource\Pages;
 
 use App\Filament\Admin\Resources\JadwalResource;
-use App\Filament\Imports\JadwalImporter;
+use App\Filament\Actions\ImportAction;
+use App\Imports\JadwalImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
@@ -22,11 +23,9 @@ class ListJadwals extends ListRecords
                 ->color('secondary')
                 ->url(route('download.template.jadwal'))
                 ->openUrlInNewTab(false),
-            Actions\ImportAction::make()
-                ->importer(JadwalImporter::class)
+            ImportAction::make(JadwalImport::class)
                 ->modalHeading('Impor Jadwal')
-                ->modalDescription('Unggah file CSV atau XLSX dengan format yang sesuai. Pastikan Anda menggunakan template yang telah disediakan. Template bisa diunduh menggunakan tombol "Download Template".')
-                ->maxRows(10000),
+                ->modalDescription('Unggah file XLSX, XLS, atau CSV. Untuk template XLSX dua sheet, hanya Sheet Data yang akan diimport.'),
         ];
     }
 

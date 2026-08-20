@@ -2,152 +2,122 @@
 
 namespace App\Filament\Imports;
 
+use App\Models\Guru;
+use App\Models\Kelas;
+use App\Models\User;
+use App\Support\RelationResolver;
+use App\Support\TextNormalizer;
+use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class UserImporter extends Importer
 {
-    protected static ?string $model = \App\Models\User::class;
+    protected static ?string $model = User::class;
 
     public static function getAcceptedFileTypes(): array
     {
         return [
-            'text/csv',
-            'text/plain',
-            'text/x-csv',
-            'application/csv',
-            'application/x-csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'text/comma-separated-values',
-            'text/x-comma-separated-values',
+            'text/csv', 'text/plain', 'text/x-csv', 'application/csv', 'application/x-csv',
+            'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/comma-separated-values', 'text/x-comma-separated-values',
         ];
     }
 
     public static function getColumns(): array
     {
         return [
-            \Filament\Actions\Imports\ImportColumn::make('name')
-                ->label('Name')
-                ->requiredMapping(true)
-                ->guess(['name', 'Name', 'nama', 'Nama', 'username'])
-                ->example('John Doe')
-                ->rules(['required', 'string', 'max:255']),
-            \Filament\Actions\Imports\ImportColumn::make('email')
-                ->label('Email')
-                ->requiredMapping(true)
-                ->guess(['email', 'Email', 'e-mail', 'user_email'])
-                ->example('john@example.com')
-                ->rules(['required', 'email', 'max:255']),
-            \Filament\Actions\Imports\ImportColumn::make('password')
-                ->label('Password')
-                ->guess(['password', 'Password', 'pwd', 'pass'])
-                ->example('password123')
-                ->rules(['nullable', 'string', 'min:8']),
-            \Filament\Actions\Imports\ImportColumn::make('role')
-                ->label('Role')
-                ->requiredMapping(true)
-                ->guess(['role', 'Role', 'roles', 'user_role'])
-                ->example('guru')
-                ->rules(['required', 'string', 'in:admin,kepsek,kurikulum,guru,siswa']),
+            ImportColumn::make('name')->label('Name')->requiredMapping(true)->guess(['name', 'nama'])->example('John Doe')->rules(['required', 'string', 'max:255']),
+            ImportColumn::make('email')->label('Email')->requiredMapping(true)->guess(['email', 'e-mail'])->example('john@example.com')->rules(['required', 'email', 'max:255']),
+            ImportColumn::make('password')->label('Password')->guess(['password', 'pwd', 'pass'])->example('password123')->rules(['nullable', 'string', 'min:8']),
+            ImportColumn::make('role')->label('Role')->requiredMapping(true)->guess(['role', 'roles'])->example('guru')->rules(['required', 'in:admin,kepsek,kurikulum,guru,siswa']),
+            ImportColumn::make('guru_id')->label('Guru')->guess(['guru', 'nama_guru', 'guru_id'])->example('Budi Santoso')->rules(['nullable', 'integer', 'exists:gurus,id']),
+            ImportColumn::make('kelas_id')->label('Kelas')->guess(['kelas', 'nama_kelas', 'kelas_id'])->example('x rpl 1')->rules(['nullable', 'integer', 'exists:kelas,id']),
         ];
     }
 
-    public function resolveRecord(): ?\App\Models\User
+    public function resolveRecord(): ?User
     {
-        // Prioritas 1: Cari by ID jika ada (dari export file)
-        if (!empty($this->data['id'])) {
-            $record = \App\Models\User::find($this->data['id']);
+        $email = TextNormalizer::trim($this->data['email'] ?? null);
+
+        if ($email) {
+            $record = User::query()->whereRaw('LOWER(TRIM(email)) = ?', [mb_strtolower($email, 'UTF-8')])->first();
+
             if ($record) {
-                Log::info('Updating existing User by ID', ['id' => $this->data['id']]);
                 return $record;
             }
         }
 
-        // Prioritas 2: Cari by email (unique field)
-        if (!empty($this->data['email'])) {
-            return \App\Models\User::firstOrNew([
-                'email' => $this->data['email']
-            ]);
-        }
-
-        return new \App\Models\User();
+        return new User();
     }
 
     public function beforeValidate(): void
     {
-        // You can modify $this->data (array) before validation
-        if (! isset($this->data['password']) || empty($this->data['password'])) {
-            $this->data['password'] = 'password123'; // Default password if not provided
+        $this->data['name'] = TextNormalizer::trim($this->data['name'] ?? null);
+        $this->data['email'] = TextNormalizer::trim($this->data['email'] ?? null);
+        $this->data['role'] = TextNormalizer::lower($this->data['role'] ?? null);
+
+        $guru = $this->data['guru_id'] ?? null;
+        $kelas = $this->data['kelas_id'] ?? null;
+
+        $this->data['guru_id'] = $this->resolveOptionalRelation(Guru::class, 'nama', $guru, 'Guru');
+        $this->data['kelas_id'] = $this->resolveOptionalRelation(Kelas::class, 'nama', $kelas, 'Kelas');
+
+        if ($this->data['role'] === 'guru' && !$this->data['guru_id']) {
+            throw ValidationException::withMessages(['guru_id' => 'Kolom guru wajib diisi dengan nama guru untuk role guru.']);
+        }
+
+        if ($this->data['role'] === 'siswa' && !$this->data['kelas_id']) {
+            throw ValidationException::withMessages(['kelas_id' => 'Kolom kelas wajib diisi dengan nama kelas untuk role siswa.']);
         }
     }
 
     public function beforeSave(): void
     {
-        // Use $this->record to adjust the model before save if necessary.
-        if ($this->record) {
-            // Ensure role has valid value or handle different role formats
-            if (!empty($this->data['role'])) {
-                $role = strtolower(trim($this->data['role']));
-                $validRoles = ['admin', 'kepsek', 'kurikulum', 'guru', 'siswa'];
+        $data = $this->data;
+        $password = $data['password'] ?? null;
+        unset($data['password']);
 
-                if (in_array($role, $validRoles)) {
-                    $this->record->role = $role;
-                } else {
-                    // Try to match common variations
-                    if (in_array($role, ['administrator', 'administrasi'])) {
-                        $this->record->role = 'admin';
-                    } elseif (in_array($role, ['kasek', 'kepsek'])) {
-                        $this->record->role = 'kepsek';
-                    } elseif (in_array($role, ['kurikulum'])) {
-                        $this->record->role = 'kurikulum';
-                    } elseif (in_array($role, ['teacher'])) {
-                        $this->record->role = 'guru';
-                    } elseif (in_array($role, ['student', 'murid'])) {
-                        $this->record->role = 'siswa';
-                    } else {
-                        // Default to 'guru' if invalid role provided
-                        $this->record->role = 'guru';
-                    }
-                }
-            } else {
-                // Default to 'guru' if no role provided
-                $this->record->role = 'guru';
+        $this->record->fill($data);
+
+        if (!$this->record->exists) {
+            if (!$password) {
+                throw ValidationException::withMessages(['password' => 'Password wajib diisi untuk user baru.']);
             }
 
-            // Hash the password hanya untuk record baru atau jika password di-update
-            if (!$this->record->exists || (!empty($this->data['password']) && $this->data['password'] !== 'password123')) {
-                if (!str_starts_with($this->data['password'] ?? '', '$2y$')) {
-                    $this->record->password = bcrypt($this->data['password'] ?? 'password123');
-                }
-            }
-            // Jika record sudah ada dan password kosong/default, keep password lama
-            // Tidak perlu set apapun, password tetap dari database
+            $this->record->password = Hash::make($password);
+        } elseif ($password) {
+            $this->record->password = Hash::make($password);
         }
     }
 
-    public function afterValidate(): void
+    private function resolveOptionalRelation(string $modelClass, string $column, mixed $value, string $label): ?int
     {
-        // No-op after validation; use $this->data if needed.
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_numeric($value) && $modelClass::query()->whereKey((int) $value)->exists()) {
+            return (int) $value;
+        }
+
+        return RelationResolver::idByText($modelClass, $column, $value, $label, false);
     }
 
     public function afterSave(): void
     {
-        // Post-create actions can use $this->record (the created model).
-        if ($this->record) {
-            Log::info('User berhasil diimport', ['id' => $this->record->id, 'email' => $this->record->email]);
-        }
+        Log::info('User berhasil diimport', ['id' => $this->record->id, 'email' => $this->record->email]);
     }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Import user selesai! ';
-        $body .= number_format($import->successful_rows) . ' baris berhasil diimport.';
+        $body = 'Import user selesai! ' . number_format($import->successful_rows) . ' baris berhasil diimport.';
 
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' baris gagal diimport.';
+        if ($failed = $import->getFailedRowsCount()) {
+            $body .= ' ' . number_format($failed) . ' baris gagal diimport.';
         }
 
         return $body;

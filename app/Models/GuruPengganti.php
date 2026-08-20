@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GuruPengganti extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'guru_pengganties';
 
@@ -23,38 +24,42 @@ class GuruPengganti extends Model
         'disetujui_oleh',
     ];
 
-    protected $casts = [];
+    protected function lowercaseAttributes(): array
+    {
+        return ['status_penggantian'];
+    }
 
-    // Relasi: Jadwal
+    protected function trimmedAttributes(): array
+    {
+        return ['keterangan', 'catatan_approval'];
+    }
+
     public function jadwal()
     {
         return $this->belongsTo(Jadwal::class, 'jadwal_id');
     }
 
-    // Relasi: Guru Asli
     public function guruAsli()
     {
         return $this->belongsTo(Guru::class, 'guru_asli_id');
     }
 
-    // Relasi: Guru Pengganti
     public function guruPengganti()
     {
         return $this->belongsTo(Guru::class, 'guru_pengganti_id');
     }
 
-    // Relasi: User yang menyetujui (Kurikulum)
     public function disetujuiOleh()
     {
         return $this->belongsTo(User::class, 'disetujui_oleh');
     }
 
-    // Accessor untuk label status
     public function getStatusPenggantianLabelAttribute()
     {
         return match ($this->status_penggantian) {
             'dijadwalkan' => 'Dijadwalkan',
             'selesai' => 'Selesai',
+            'tidak_hadir' => 'Tidak Hadir',
             'dibatalkan' => 'Dibatalkan',
             default => $this->status_penggantian,
         };

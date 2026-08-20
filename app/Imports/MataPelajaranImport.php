@@ -3,17 +3,53 @@
 namespace App\Imports;
 
 use App\Models\MataPelajaran;
+use App\Support\TextNormalizer;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MataPelajaranImport implements ToModel, WithHeadingRow, WithValidation, WithBatchInserts, WithChunkReading, SkipsOnError
+class MataPelajaranImport implements ToModel, WithHeadingRow, WithValidation, WithBatchInserts, WithChunkReading
 {
-    use SkipsFailures;
+    public function model(array $row)
+    {
+        $kode = TextNormalizer::lower($row['kode'] ?? null);
+        $nama = TextNormalizer::lower($row['nama'] ?? null);
+        $record = MataPelajaran::withTrashed()->whereRaw('LOWER(TRIM(kode)) = ?', [$kode])->first();
+
+        if (!$record) {
+            $record = MataPelajaran::withTrashed()->whereRaw('LOWER(TRIM(nama)) = ?', [$nama])->first();
+        }
+
+        $record ??= new MataPelajaran();
+        if ($record->exists && $record->trashed()) {
+            $record->deleted_at = null;
+        }
+
+        $record->fill([
+            'kode' => $kode,
+            'nama' => $nama,
+            'deskripsi' => TextNormalizer::trim($row['deskripsi'] ?? null),
+            'sks' => $row['sks'] ?? 1,
+            'kategori' => TextNormalizer::lower($row['kategori'] ?? null),
+            'status' => TextNormalizer::lower($row['status'] ?? 'aktif'),
+        ]);
+
+        return $record;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'kode' => 'required|string|max:20',
+            'nama' => 'required|string|max:100',
+            'deskripsi' => 'nullable|string|max:255',
+            'sks' => 'nullable|integer|min:0|max:10',
+            'kategori' => 'nullable|string|max:50',
+            'status' => 'nullable|string',
+        ];
+    }
 
     public function batchSize(): int
     {
@@ -23,60 +59,5 @@ class MataPelajaranImport implements ToModel, WithHeadingRow, WithValidation, Wi
     public function chunkSize(): int
     {
         return 1000;
-    }
-
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function model(array $row)
-    {
-        return new MataPelajaran([
-            'kode' => $row['kode'] ?? null,
-            'nama' => $row['nama'] ?? null,
-            'deskripsi' => $row['deskripsi'] ?? null,
-            'sks' => $row['sks'] ?? 1,
-            'kategori' => $row['kategori'] ?? 'wajib',
-            'status' => $this->parseStatus($row['status'] ?? 'aktif'),
-        ]);
-    }
-
-    private function parseStatus($value)
-    {
-        if (is_string($value)) {
-            $value = strtolower(trim($value));
-            if (in_array($value, ['1', 'true', 'yes', 'aktif', 'active'], true)) {
-                return 'aktif';
-            }
-            if (in_array($value, ['0', 'false', 'no', 'nonaktif', 'inactive'], true)) {
-                return 'nonaktif';
-            }
-        }
-
-        // Default to aktif if value is truthy, nonaktif if falsy
-        return $value ? 'aktif' : 'nonaktif';
-    }
-
-    // For imports, perform normalization/casting inside model() if needed.
-
-    public function rules(): array
-    {
-        return [
-            'kode' => 'required|string|max:20|unique:mata_pelajarans,kode',
-            'nama' => 'required|string|max:100',
-            'deskripsi' => 'nullable|string|max:255',
-            // Make sks/kategori/status nullable so imports without these columns
-            // will still succeed and use sensible defaults in model().
-            'sks' => 'nullable|integer|min:1|max:10',
-            'kategori' => 'nullable|in:wajib,pilihan,muatan-lokal',
-            'status' => 'nullable|in:aktif,nonaktif',
-        ];
-    }
-
-    public function onError(\Throwable $e)
-    {
-        // Handle error
-        return null;
     }
 }

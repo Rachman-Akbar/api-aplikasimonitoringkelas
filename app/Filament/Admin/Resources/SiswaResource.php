@@ -345,7 +345,6 @@ class SiswaResource extends Resource
                         ExcelExport::make('siswas')
                             ->fromTable()
                             ->withColumns([
-                                Column::make('id'),
                                 Column::make('nis'),
                                 Column::make('nisn'),
                                 Column::make('nama'),

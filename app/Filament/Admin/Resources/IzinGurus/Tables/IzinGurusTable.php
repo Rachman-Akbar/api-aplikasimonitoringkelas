@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\IzinGurus\Tables;
 
+use App\Support\ExportColumns;
+
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -156,6 +158,7 @@ class IzinGurusTable
             ExportBulkAction::make()->exports([
                 ExcelExport::make('table')
                     ->fromTable()
+                    ->withColumns(ExportColumns::izinGuru())
                     ->withFilename('teacher-permission-data-' . date('Y-m-d'))
                     ->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
             ])->label('Export Selected'),

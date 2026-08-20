@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\KehadiranGurus\Pages;
 
+use App\Support\ExportColumns;
+
 use App\Filament\Admin\Resources\KehadiranGurus\KehadiranGuruResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
@@ -19,6 +21,7 @@ class ListKehadiranGurus extends ListRecords
                 ->exports([
                     ExcelExport::make('export')
                         ->fromTable()
+                        ->withColumns(ExportColumns::kehadiranGuru())
                         ->withFilename('kehadiran-guru-rekapan-' . date('Y-m-d'))
                         ->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
                 ])

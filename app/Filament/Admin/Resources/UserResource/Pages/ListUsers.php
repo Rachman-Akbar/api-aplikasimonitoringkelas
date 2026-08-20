@@ -3,7 +3,8 @@
 namespace App\Filament\Admin\Resources\UserResource\Pages;
 
 use App\Filament\Admin\Resources\UserResource;
-use App\Filament\Imports\UserImporter;
+use App\Filament\Actions\ImportAction;
+use App\Imports\UserImport;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\MaxWidth;
@@ -22,11 +23,9 @@ class ListUsers extends ListRecords
                 ->color('secondary')
                 ->url(route('download.template.user'))
                 ->openUrlInNewTab(false),
-            Actions\ImportAction::make()
-                ->importer(UserImporter::class)
+            ImportAction::make(UserImport::class)
                 ->modalHeading('Impor User')
-                ->modalDescription('Unggah file CSV atau XLSX dengan format yang sesuai. Pastikan Anda menggunakan template yang telah disediakan. Template bisa diunduh menggunakan tombol "Download Template".')
-                ->maxRows(10000),
+                ->modalDescription('Unggah file XLSX, XLS, atau CSV. Untuk template XLSX dua sheet, hanya Sheet Data yang akan diimport.'),
         ];
     }
 

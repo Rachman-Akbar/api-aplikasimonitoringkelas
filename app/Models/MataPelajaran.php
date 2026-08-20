@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MataPelajaran extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'mata_pelajarans';
 
@@ -23,7 +24,7 @@ class MataPelajaran extends Model
 
     protected $casts = [
         'sks' => 'integer',
-        'status' => 'string', // This should be 'string' since it's an enum in the database
+        'status' => 'string',
     ];
 
     protected $attributes = [
@@ -31,7 +32,21 @@ class MataPelajaran extends Model
         'sks' => 1,
     ];
 
-    // Relasi: Jadwal
+    protected function lowercaseAttributes(): array
+    {
+        return ['kode', 'nama', 'kategori', 'status'];
+    }
+
+    protected function trimmedAttributes(): array
+    {
+        return ['deskripsi'];
+    }
+
+    protected function caseInsensitiveUniqueAttributes(): array
+    {
+        return ['kode', 'nama'];
+    }
+
     public function jadwals()
     {
         return $this->hasMany(Jadwal::class);
@@ -42,9 +57,6 @@ class MataPelajaran extends Model
         return $this->status === 'aktif' ? 'Aktif' : 'Nonaktif';
     }
 
-    /**
-     * Boot the model and add a global scope to order by nama by default
-     */
     protected static function boot()
     {
         parent::boot();

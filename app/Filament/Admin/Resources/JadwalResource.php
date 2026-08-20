@@ -394,7 +394,6 @@ class JadwalResource extends Resource
                         ExcelExport::make('jadwals')
                             ->fromTable()
                             ->withColumns([
-                                Column::make('id'),
                                 Column::make('kelas.nama')->heading('Kelas'),
                                 Column::make('mataPelajaran.nama')->heading('Mata Pelajaran'),
                                 Column::make('guru.nama')->heading('Guru'),

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\IzinGurus\Pages;
 
+use App\Support\ExportColumns;
+
 use App\Filament\Admin\Resources\IzinGurus\IzinGuruResource;
 use App\Models\IzinGuru;
 use Filament\Actions\CreateAction;
@@ -21,6 +23,7 @@ class ListIzinGurus extends ListRecords
                 ->exports([
                     ExcelExport::make('export')
                         ->fromTable()
+                        ->withColumns(ExportColumns::izinGuru())
                         ->withFilename('izin-guru-rekapan-' . date('Y-m-d'))
                         ->withWriterType(\Maatwebsite\Excel\Excel::XLSX),
                 ])

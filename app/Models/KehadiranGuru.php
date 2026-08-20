@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KehadiranGuru extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $fillable = [
         'jadwal_id',
@@ -26,25 +27,31 @@ class KehadiranGuru extends Model
         'durasi_keterlambatan' => 'integer',
     ];
 
-    // Relasi: Jadwal
+    protected function lowercaseAttributes(): array
+    {
+        return ['status_kehadiran'];
+    }
+
+    protected function trimmedAttributes(): array
+    {
+        return ['waktu_datang', 'keterangan'];
+    }
+
     public function jadwal()
     {
         return $this->belongsTo(Jadwal::class);
     }
 
-    // Relasi: Guru
     public function guru()
     {
         return $this->belongsTo(Guru::class);
     }
 
-    // Relasi: User yang menginput
     public function diinputOleh()
     {
         return $this->belongsTo(User::class, 'diinput_oleh');
     }
 
-    // Accessor untuk label status
     public function getStatusKehadiranLabelAttribute()
     {
         return match ($this->status_kehadiran) {

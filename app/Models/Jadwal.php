@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesTextAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Jadwal extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, NormalizesTextAttributes;
 
     protected $table = 'jadwals';
 
@@ -34,28 +35,34 @@ class Jadwal extends Model
     ];
 
     protected $attributes = [
-        'status' => 'aktif', // Default status
+        'status' => 'aktif',
     ];
 
-    // Relasi: Kelas
+    protected function lowercaseAttributes(): array
+    {
+        return ['ruangan', 'status'];
+    }
+
+    protected function trimmedAttributes(): array
+    {
+        return ['hari', 'tahun_ajaran', 'keterangan'];
+    }
+
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);
     }
 
-    // Relasi: Mata Pelajaran
     public function mataPelajaran()
     {
         return $this->belongsTo(MataPelajaran::class);
     }
 
-    // Relasi: Guru
     public function guru()
     {
         return $this->belongsTo(Guru::class);
     }
 
-    // Relasi: Kehadiran
     public function kehadirans()
     {
         return $this->hasMany(Kehadiran::class);

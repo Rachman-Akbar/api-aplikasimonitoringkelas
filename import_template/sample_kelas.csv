@@ -1,0 +1,6 @@
+nama,tingkat,jurusan,wali_kelas_id,kapasitas,jumlah_siswa,ruangan,status
+XII RPL 1,12,Rekayasa Perangkat Lunak,1,36,32,A301,aktif
+XI RPL 1,11,Rekayasa Perangkat Lunak,2,36,34,A302,aktif
+X RPL 1,10,Rekayasa Perangkat Lunak,3,36,35,A303,aktif
+XII TKJ 1,12,Teknik Komputer dan Jaringan,4,30,28,B201,aktif
+XI TKJ 1,11,Teknik Komputer dan Jaringan,5,30,29,B202,aktif

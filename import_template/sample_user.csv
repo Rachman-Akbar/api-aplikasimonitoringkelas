@@ -1,0 +1,7 @@
+name,email,password,role
+Admin Utama,admin@example.com,password123,admin
+Kepala Sekolah,kepsek@example.com,password123,kepsek
+Kurikulum Sekolah,kurikulum@example.com,password123,kurikulum
+Ahmad Fauzi Guru,ahmad.fauzi.guru@example.com,password123,guru
+Siti Nurjanah Guru,siti.nurjanah.guru@example.com,password123,guru
+Budi Santoso Siswa,budi.santoso.siswa@example.com,password123,siswa

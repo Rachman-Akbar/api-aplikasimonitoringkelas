@@ -1,0 +1,486 @@
+{
+  "info": {
+    "name": "API Aplikasi Monitoring Kelas",
+    "_postman_id": "monitoring-kelas-api",
+    "description": "Collection untuk testing API Aplikasi Monitoring Kelas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. GURU",
+      "item": [
+        {
+          "name": "Get All Guru",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/guru",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "guru"]
+            }
+          }
+        },
+        {
+          "name": "Get Guru by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/guru/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "guru", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Guru",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nip\": \"198501012010011004\",\n    \"nama\": \"John Doe, S.Pd\",\n    \"email\": \"john@sekolah.com\",\n    \"no_telp\": \"081234567890\",\n    \"alamat\": \"Jl. Contoh No. 1\",\n    \"jenis_kelamin\": \"L\",\n    \"tanggal_lahir\": \"1985-01-01\",\n    \"status\": \"aktif\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/guru",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "guru"]
+            }
+          }
+        },
+        {
+          "name": "Update Guru",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nama\": \"John Doe Updated, S.Pd\",\n    \"status\": \"aktif\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/guru/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "guru", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Guru",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/guru/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "guru", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. SISWA",
+      "item": [
+        {
+          "name": "Get All Siswa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/siswa",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "siswa"]
+            }
+          }
+        },
+        {
+          "name": "Get Siswa by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/siswa/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "siswa", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Siswa by Kelas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/siswa/kelas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "siswa", "kelas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Siswa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nis\": \"2024003\",\n    \"nisn\": \"0012345603\",\n    \"nama\": \"Budi Santoso\",\n    \"email\": \"budi@sekolah.com\",\n    \"no_telp\": \"081298765003\",\n    \"alamat\": \"Jl. Siswa No. 3\",\n    \"jenis_kelamin\": \"L\",\n    \"tanggal_lahir\": \"2008-07-10\",\n    \"kelas_id\": 1,\n    \"nama_orang_tua\": \"Bapak Santoso\",\n    \"no_telp_orang_tua\": \"081234560003\",\n    \"status\": \"aktif\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/siswa",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "siswa"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. KELAS",
+      "item": [
+        {
+          "name": "Get All Kelas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/kelas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kelas"]
+            }
+          }
+        },
+        {
+          "name": "Get Kelas by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/kelas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kelas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Kelas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nama\": \"X IPA 3\",\n    \"tingkat\": 10,\n    \"jurusan\": \"IPA\",\n    \"wali_kelas_id\": 1,\n    \"kapasitas\": 36,\n    \"jumlah_siswa\": 0,\n    \"ruangan\": \"R103\",\n    \"status\": \"aktif\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/kelas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kelas"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. MATA PELAJARAN",
+      "item": [
+        {
+          "name": "Get All Mata Pelajaran",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/mata-pelajaran",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "mata-pelajaran"]
+            }
+          }
+        },
+        {
+          "name": "Get Mata Pelajaran by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/mata-pelajaran/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "mata-pelajaran", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Mata Pelajaran",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kode\": \"BIO\",\n    \"nama\": \"Biologi\",\n    \"deskripsi\": \"Mata pelajaran biologi untuk tingkat SMA\",\n    \"sks\": 4,\n    \"kategori\": \"wajib\",\n    \"status\": \"aktif\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/mata-pelajaran",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "mata-pelajaran"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. JADWAL",
+      "item": [
+        {
+          "name": "Get All Jadwal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/jadwal",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "jadwal"]
+            }
+          }
+        },
+        {
+          "name": "Get Jadwal by Kelas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/jadwal/kelas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "jadwal", "kelas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Jadwal by Guru",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/jadwal/guru/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "jadwal", "guru", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Jadwal by Hari",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/jadwal/hari/Senin",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "jadwal", "hari", "Senin"]
+            }
+          }
+        },
+        {
+          "name": "Create Jadwal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kelas_id\": 1,\n    \"mata_pelajaran_id\": 3,\n    \"guru_id\": 3,\n    \"hari\": \"Kamis\",\n    \"jam_mulai\": \"13:00\",\n    \"jam_selesai\": \"14:30\",\n    \"ruangan\": \"R101\",\n    \"status\": \"aktif\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/jadwal",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "jadwal"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. KEHADIRAN",
+      "item": [
+        {
+          "name": "Get All Kehadiran",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/kehadiran",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kehadiran"]
+            }
+          }
+        },
+        {
+          "name": "Get Kehadiran by Siswa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/kehadiran/siswa/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kehadiran", "siswa", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Rekap Kehadiran Siswa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/kehadiran/rekap/siswa/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kehadiran", "rekap", "siswa", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Kehadiran by Jadwal dan Tanggal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/kehadiran/jadwal/1/tanggal/2025-10-15",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kehadiran", "jadwal", "1", "tanggal", "2025-10-15"]
+            }
+          }
+        },
+        {
+          "name": "Create Kehadiran",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"siswa_id\": 1,\n    \"jadwal_id\": 1,\n    \"tanggal\": \"2025-10-19\",\n    \"status\": \"hadir\",\n    \"keterangan\": null\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/kehadiran",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "kehadiran"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. USER",
+      "item": [
+        {
+          "name": "Get All User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/user",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "user"]
+            }
+          }
+        },
+        {
+          "name": "Get User by Role",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/user/role/admin",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "user", "role", "admin"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

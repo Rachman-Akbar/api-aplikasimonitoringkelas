@@ -1,0 +1,6 @@
+id,guru_mengajar_id,guru_pengganti_id,alasan_penggantian,status_penggantian,catatan,dibuat_oleh
+1,1,2,Guru utama sakit,terlaksana,Penggantian berjalan lancar,3
+2,2,3,Guru utama izin,dijadwalkan,Sudah konfirmasi dengan guru pengganti,3
+3,3,4,Guru utama cuti,terlaksana,Materi sudah disampaikan lengkap,3
+4,4,1,Guru utama tidak hadir,dibatalkan,Jadwal berubah menjadi belajar mandiri,3
+5,5,2,Guru utama izin mendadak,dijadwalkan,Menunggu konfirmasi guru pengganti,3

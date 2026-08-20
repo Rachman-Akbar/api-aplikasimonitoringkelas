@@ -1,0 +1,6 @@
+nip,nama,email,no_telp,alamat,jenis_kelamin,tanggal_lahir,status
+198001012010011001,Ahmad Fauzi S.Kom,ahmad.fauzi@example.com,081234567890,Jl. Merdeka No. 10 Jakarta Selatan,L,1980-01-01,aktif
+197805152008012001,Siti Nurjanah S.Pd,siti.nurjanah@example.com,082345678901,Jl. Pahlawan No. 15 Jakarta Timur,P,1978-05-15,aktif
+198503202012011001,Budi Santoso M.Kom,budi.santoso@example.com,083456789012,Jl. Sudirman No. 20 Jakarta Pusat,L,1985-03-20,aktif
+197912102009012001,Dewi Lestari S.Kom,dewi.lestari@example.com,084567890123,Jl. Gatot Subroto No. 25 Jakarta Barat,P,1979-12-10,aktif
+198207152011011001,Rizki Ramadhan S.T,rizki.ramadhan@example.com,085678901234,Jl. Thamrin No. 30 Jakarta Utara,L,1982-07-15,aktif

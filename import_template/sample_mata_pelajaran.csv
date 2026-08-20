@@ -1,0 +1,6 @@
+kode,nama,deskripsi,sks,kategori,status
+MTK001,Matematika,Pelajaran matematika dasar untuk pemrograman meliputi aljabar linear dan kalkulus,3,Keahlian,aktif
+IND001,Bahasa Indonesia,Bahasa dan Sastra Indonesia untuk komunikasi dan dokumentasi teknis,2,Normatif,aktif
+ING001,Bahasa Inggris,Pengembangan Bahasa Inggris untuk komunikasi internasional dan dokumentasi,2,Normatif,aktif
+PRKJ001,Pemrograman Komputer dan Jaringan,Dasar-dasar pemrograman untuk jaringan komputer,4,Kejuruan,aktif
+WEB001,Pemrograman Web,Pemrograman web menggunakan HTML CSS JavaScript PHP dan framework modern,4,Kejuruan,aktif

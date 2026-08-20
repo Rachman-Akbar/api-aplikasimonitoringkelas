@@ -1,0 +1,6 @@
+id,guru_id,jenis_izin,tanggal_mulai,tanggal_selesai,alasan,file_surat,status_approval,disetujui_oleh,tanggal_approval,catatan_approval
+1,1,sakit,2025-01-15,2025-01-17,Sakit demam tinggi,/storage/surat/izin_guru_001.pdf,disetujui,2,2025-01-14 10:30:00,Semoga cepat sembuh
+2,2,izin,2025-02-20,2025-02-20,Keperluan keluarga,/storage/surat/izin_guru_002.pdf,menunggu,,,
+3,3,cuti,2025-03-10,2025-03-14,Cuti tahunan,/storage/surat/izin_guru_003.pdf,disetujui,2,2025-03-01 14:15:00,Disetujui sesuai jadwal cuti
+4,4,sakit,2025-04-05,2025-04-06,Sakit flu,/storage/surat/izin_guru_004.pdf,ditolak,2,2025-04-04 09:00:00,Mohon reschedule ke minggu depan
+5,1,izin,2025-05-22,2025-05-22,Menghadiri acara keluarga,/storage/surat/izin_guru_005.pdf,menunggu,,,

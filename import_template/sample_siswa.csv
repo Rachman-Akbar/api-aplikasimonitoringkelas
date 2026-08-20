@@ -1,0 +1,6 @@
+nis,nisn,nama,email,no_telp,kelas_id,alamat,jenis_kelamin,tanggal_lahir,nama_orang_tua,no_telp_orang_tua,status
+2024001,0012345678,Ahmad Fauzi,ahmad.fauzi.siswa@example.com,081234567890,1,Jl. Merdeka No. 10 Jakarta Selatan,L,2008-01-01,Budi Santoso,081345678901,aktif
+2024002,0012345679,Siti Nurjanah,siti.nurjanah.siswa@example.com,082345678901,1,Jl. Pahlawan No. 15 Jakarta Timur,P,2007-05-15,Agus Handoko,082456789012,aktif
+2024003,0012345680,Rizki Ramadhan,rizki.ramadhan.siswa@example.com,083456789012,2,Jl. Sudirman No. 20 Jakarta Pusat,L,2008-03-20,Dewi Lestari,083567890123,aktif
+2024004,0012345681,Dewi Lestari,dewi.lestari.siswa@example.com,084567890123,2,Jl. Gatot Subroto No. 25 Jakarta Barat,P,2007-12-10,Siti Aminah,084678901234,aktif
+2024005,0012345682,Budi Santoso,budi.santoso.siswa@example.com,085678901234,3,Jl. Thamrin No. 30 Jakarta Utara,L,2008-07-15,Ahmad Yani,085789012345,aktif

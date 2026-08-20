@@ -1,0 +1,6 @@
+id,siswa_id,jadwal_id,tanggal,status_kehadiran,keterangan
+1,1,1,2025-01-15,hadir,
+2,2,1,2025-01-15,hadir,
+3,3,2,2025-01-15,sakit,Sakit flu
+4,4,3,2025-01-16,izin,Izin keperluan keluarga
+5,5,4,2025-01-16,tidak_hadir,Tidak ada keterangan
